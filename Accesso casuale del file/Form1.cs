@@ -14,10 +14,14 @@ namespace Accesso_casuale_del_file
     public partial class Form1 : Form
     {
         string nfile;
+        int recordLenght;
+        String line;
+        byte[] br;
         public Form1()
         {
             InitializeComponent();
-            nfile = @"random.txt";
+            nfile = @"random.csv";
+            recordLenght = 64;
         }
 
         public struct Prod
@@ -30,6 +34,24 @@ namespace Accesso_casuale_del_file
 
         }
 
+        //bottone aggiunta
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Aggiunta(textBox1.Text, textBox2.Text, nfile);
+        }
+        //bottone ricerca
+        private void button2_Click(object sender, EventArgs e)
+        {
+            bool ricerca = Ricerca(nfile);
+            if (ricerca == true)
+            {
+                MessageBox.Show("Il prodotto è presente nel file");
+            }
+            else
+            {
+                MessageBox.Show("Prodotto non trovato");
+            }
+        }
         public void Aggiunta(string nprod, string prezzo, string filename)
         {
             var oStream = new FileStream(filename, FileMode.Append, FileAccess.Write, FileShare.Read);
@@ -38,9 +60,26 @@ namespace Accesso_casuale_del_file
             sw.Close();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        public bool Ricerca(string nfile)
         {
-            Aggiunta(textBox1.Text, textBox2.Text, nfile);
+            bool ricerca = false;
+            var f = new FileStream(nfile, FileMode.Open, FileAccess.Read);
+            BinaryReader reader = new BinaryReader(f);
+            f.Seek(0, SeekOrigin.Begin);
+            while(f.Position < f.Length)
+            {
+                br = reader.ReadBytes(recordLenght);
+                line = Encoding.ASCII.GetString(br, 0, br.Length);
+                MessageBox.Show(line);
+                if(line.Contains(textBox3.Text))
+                {
+                    ricerca = true;
+                }
+                
+            }
+            return ricerca;
         }
+
+       
     }
 }
