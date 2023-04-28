@@ -52,12 +52,29 @@ namespace Accesso_casuale_del_file
                 MessageBox.Show("Prodotto non trovato");
             }
         }
+        //bottone modifica
+        private void button3_Click(object sender, EventArgs e)
+        {
+            bool modifica = Modifica(nfile, textBox5.Text);
+            if(modifica == true)
+            {
+                MessageBox.Show("Prodotto modificato");
+            }
+            else
+            {
+                MessageBox.Show("Prodotto non trovato");
+            }
+        }
         public void Aggiunta(string nprod, string prezzo, string filename)
         {
             var oStream = new FileStream(filename, FileMode.Append, FileAccess.Write, FileShare.Read);
             StreamWriter sw = new StreamWriter(oStream);
-            sw.WriteLine(nprod + " " + prezzo);
+            sw.WriteLine(Tostring(nprod,prezzo).PadRight(64)+"##");
             sw.Close();
+        }
+        public string Tostring(string nprod, string prezzo,string sep = ";")
+        {
+            return nprod + sep + prezzo;
         }
 
         public bool Ricerca(string nfile)
@@ -80,6 +97,38 @@ namespace Accesso_casuale_del_file
             return ricerca;
         }
 
-       
+        public bool Modifica(string nfile, string nuovoprod, string sep = ";")
+        {
+            bool modifica = false;
+            
+            var f = new FileStream(nfile, FileMode.Open, FileAccess.ReadWrite);
+            BinaryReader reader = new BinaryReader(f);
+            f.Seek(0, SeekOrigin.Begin);
+            while (f.Position < f.Length)
+            {
+               
+                br = reader.ReadBytes(recordLenght);
+                line = Encoding.ASCII.GetString(br, 0, br.Length);
+                MessageBox.Show(line);
+                if (line.Contains(textBox4.Text))
+                {
+                    modifica = true;
+                    String[] fields = line.Split(sep[0]);
+                    fields[0] = nuovoprod;
+                    
+                    
+                  
+
+
+
+                }
+                
+            }
+            MessageBox.Show(line);
+            return modifica;
+            
+        }
+        
+      
     }
 }
